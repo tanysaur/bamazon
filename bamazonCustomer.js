@@ -13,6 +13,7 @@ var connection = mysql.createConnection({
   database: "bamazon"
 });
 
+// Starts the server
 connection.connect(function(err) {
   if (err) throw err;
   console.log("Connected as id " + connection.threadId + "\n");
@@ -26,11 +27,10 @@ connection.query("SELECT * FROM products", function(err, res) {
   }
   console.log("-----------------------------------\n");
 
-  // Run the prompt menu to shop
-
   // Show the store's inventory and make a purchase
   var products = ["Banana", "Avocado", "Camera", "Laptop", "Rice Cooker", "Guitar", "Drumset", "Bicycle", "Longboard","Tent"];
 
+  // Starts the menu prompt
   inquirer.prompt([{
     name: "chooseProduct",
     type: "rawlist",
@@ -44,6 +44,7 @@ connection.query("SELECT * FROM products", function(err, res) {
   ]).then(function(answer) {
     //console.log(answer);
 
+    // Assigns productChosen to the index of the products array
     var productChosen;
     for(var i = 0; i < products.length; i++){
       if(products[i] == answer.chooseProduct){
@@ -52,9 +53,11 @@ connection.query("SELECT * FROM products", function(err, res) {
       }
     }
 
-    var totalQty = answer.chooseQty;
+    // Initialize & make explicit these variables from the answer of prompt
+    var totalQty = answer.chooseQty;  // User's qty answer
     var finalSalePrice = answer.chooseQty * res[productChosen].price; // Qty * price
-    var updatedQty = res[productChosen].stock_qty - totalQty;
+    var updatedQty = res[productChosen].stock_qty - totalQty; // Subtract user's qty order to the database stock qty
+
     // Check if Bamazon has the product in stock_qty
     if(answer.chooseQty <= res[productChosen].stock_qty){
       // If yes, update SQL database to remaining Qty
@@ -62,7 +65,8 @@ connection.query("SELECT * FROM products", function(err, res) {
         if(err){
           throw err;
         }else{
-          console.log(res);
+          // Confirm database has been updated
+          console.log("Database updated: " + res.protocol41);
         }
       });
 
@@ -75,6 +79,5 @@ connection.query("SELECT * FROM products", function(err, res) {
         console.log("Insufficient quantity!");
         connection.end();
     }
-
   });
 });
