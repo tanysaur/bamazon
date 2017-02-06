@@ -18,53 +18,56 @@ connection.connect(function(err) {
   console.log("Connected as id " + connection.threadId + "\n");
 });
 
+// Show the current store selection
 connection.query("SELECT * FROM products", function(err, res) {
   console.log("ID# | Product Name | Dept Name | Price | Stock Qty");
   for (var i = 0; i < res.length; i++) {
     console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].dept_name + " | " + res[i].price + " | " + res[i].stock_qty);
   }
-  console.log("-----------------------------------");
+  console.log("-----------------------------------\n");
 
-  menu();
-});
+  // Run the prompt menu to shop
 
-// Show the store's inventory
-var menu = function() {
-   var products = ["Bananas", "Avocados", "Camera", "Laptop", "Rice Cooker", "Guitar", "Drumset", "Bicycle", "Longboard","Tent"]
+  // Show the store's inventory and make a purchase
+  var products = ["Banana", "Avocado", "Camera", "Laptop", "Rice Cooker", "Guitar", "Drumset", "Bicycle", "Longboard","Tent"];
 
   inquirer.prompt([{
     name: "chooseProduct",
     type: "rawlist",
     message: "Please enter the ID# (1 to 10) of the product you want to buy.",
     choices: products
-  },{
+    },{
    name: "chooseQty",
    type: "input",
    message: "Quantity:"
- },{
-   name: "finalizeCart",
-   type: "confirm",
-   message: "Is this final?"
+    }
+  ]).then(function(answer) {
+    //console.log(answer);
 
- }]).then(function(answer) {
-    console.log(answer);
-    console.log(answer.chooseProduct);
-    console.log(answer.chooseQty);
-    console.log(answer.finalizeCart);
-
-
-    if(!answer.finalizeCart){
-      menu();
-    }else{
-
-      // Check if Bamazon has the product in stock_qty
-      if(answer.choose){
-      // If yes, update SQL database to remaining Qty
-
-      // Show customer cost of the product
-      // Else "Insufficient quantity"
+    var productChosen;
+    for(var i = 0; i < products.length; i++){
+      if(products[i] == answer.chooseProduct){
+        productChosen = i;
+        //console.log(i);
       }
     }
 
+    var totalQty = answer.chooseQty;
+    var finalSalePrice = answer.chooseQty * res[productChosen].price; // Qty * price
+
+    // Check if Bamazon has the product in stock_qty
+    if(answer.chooseQty <= res[productChosen].stock_qty){
+      // If yes, update SQL database to remaining Qty
+
+      // Show customer receipt (i.e. qty + cost of the product), then end connection
+      console.log("Thank you for purchasing " + totalQty + " x " + answer.chooseProduct +
+                ". \nYour total price is: $" + finalSalePrice + ". See you again!");
+      connection.end();
+    // Else "Insufficient quantity"
+    }else{
+        console.log("Insufficient quantity!");
+        connection.end();
+    }
+
   });
-};
+});
