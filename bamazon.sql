@@ -13,8 +13,12 @@ CREATE TABLE products (
 
 INSERT INTO products (item_id, product_name, dept_name, price, stock_qty)
 VALUES (1, "Banana", "Produce", 4.00, 100),
-      (2, "DVD", "Media", 7.00, 100);
-
--- ### Alternative way to insert more than one row
--- INSERT INTO products (flavor, price, stock_qty) 
--- VALUES ("vanilla", 2.50, 100), ("chocolate", 3.10, 120), ("strawberry", 3.25, 75);
+      (2, "Avocados", "Produce", 5.00, 50),
+      (3, "Camera", "Electronics", 500.00, 10),
+      (4, "Laptop", "Electronics", 1500.00, 3),
+      (5, "Rice Cooker", "Electronics", 50.00, 10),
+      (6, "Guitar", "Music", 700.00, 10),
+      (7, "Drumset", "Music", 300.00, 5),
+      (8, "Bicycle", "Sports", 300.00, 15),
+      (9, "Longboard", "Sports", 200.00, 25),
+      (10, "Tent", "Recreation", 300.00, 15);

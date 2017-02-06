@@ -9,32 +9,62 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "",
-  database: "products"
+  password: "rootpassword",
+  database: "bamazon"
 });
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
+  console.log("Connected as id " + connection.threadId + "\n");
 });
 
-// connection.query("INSERT INTO products SET ?", {
-//   flavor: "Rocky Road",
-//   price: 3.00,
-//   quantity: 50
-// }, function(err, res) {});
+connection.query("SELECT * FROM products", function(err, res) {
+  console.log("ID# | Product Name | Dept Name | Price | Stock Qty");
+  for (var i = 0; i < res.length; i++) {
+    console.log(res[i].item_id + " | " + res[i].product_name + " | " + res[i].dept_name + " | " + res[i].price + " | " + res[i].stock_qty);
+  }
+  console.log("-----------------------------------");
 
-// connection.query("UPDATE products SET ? WHERE ?", [{
-//   quantity: 100
-// }, {
-//   flavor: "Rocky Road"
-// }], function(err, res) {});
+  menu();
+});
 
-// connection.query("DELETE FROM products WHERE ?", {
-//   flavor: "strawberry"
-// }, function(err, res) {});
+// Show the store's inventory
+var menu = function() {
+   var products = ["Bananas", "Avocados", "Camera", "Laptop", "Rice Cooker", "Guitar", "Drumset", "Bicycle", "Longboard","Tent"]
 
-// connection.query("SELECT * FROM products", function(err, res) {
-//   if (err) throw err;
-//   console.log(res);
-// });
+  inquirer.prompt([{
+    name: "chooseProduct",
+    type: "rawlist",
+    message: "Please enter the ID# (1 to 10) of the product you want to buy.",
+    choices: products
+  },{
+   name: "chooseQty",
+   type: "input",
+   message: "Quantity:"
+ },{
+   name: "finalizeCart",
+   type: "confirm",
+   message: "Is this final?"
+
+ }]).then(function(answer) {
+    console.log(answer);
+    console.log(answer.chooseProduct);
+    console.log(answer.chooseQty);
+    console.log(answer.finalizeCart);
+
+
+    if(!answer.finalizeCart){
+      menu();
+    }else{
+
+      // Check if Bamazon has the product in stock_qty
+      if(answer.choose){
+      // If yes, update SQL database to remaining Qty
+
+      // Show customer cost of the product
+      // Else "Insufficient quantity"
+      }
+    }
+
+  });
+};
